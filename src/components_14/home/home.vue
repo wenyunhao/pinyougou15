@@ -1,0 +1,184 @@
+<template>
+  <el-container class="height100">
+    <!-- 侧边栏 -->
+    <!-- <div style="width:200px height:24px display:flex">logo</div> -->
+    <el-aside width="200px">
+      <div class="logo">
+        <img src="../../../static/logo.png" style="height:40px" />
+      </div>
+      <el-col :span="24">
+        <el-menu :router="true" default-active="2" class="el-menu-vertical-demo">
+          <el-submenu index="1">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>用户管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="users">
+                <i class="el-icon-menu"></i>用户列表
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>权限管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="roles">角色列表</el-menu-item>
+              <el-menu-item index="rights">权限列表</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
+      </el-col>
+    </el-aside>
+
+    <el-container>
+      <el-header>
+        <el-col :span="4">
+          <el-breadcrumb separator="/">
+          <transition name="breadcrumb">
+            <el-breadcrumb-item :to="{ path: 'pathList' }">{{pathList}}</el-breadcrumb-item>
+            <el-breadcrumb-item>
+              <a href="/">活动管理</a>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+            <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+            </transition>
+          </el-breadcrumb>
+        </el-col>
+        <el-col :span="16">
+          <div class="grid-content bg-purple-light">
+            <h2>电商后台管理系统</h2>
+          </div>
+        </el-col>
+        <el-col :span="4">
+          <div class="grid-content bg-purple">
+            <el-button @click.stop="logOut" type="warning">退出</el-button>
+          </div>
+        </el-col>
+      </el-header>
+      <!-- 显示区 -->
+      <el-main style="width:100%">
+        <transition name="fade-transform" mode="out-in">
+          <router-view />
+        </transition>
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+
+<script>
+export default {
+  data(){
+    return {
+      pathList:null
+    }
+  },
+  watch:{
+    $route(){
+      console.log('myroute:',this.$route)
+      this.pathList=this.$route.name
+    }
+  },
+  // 其他页面全部依赖home加载
+  // 如果没有登录,直接跳转到登录页面
+  // 利用钩子函数 在页面渲染之前,获取判断用户登录信息
+  // 判断登录
+  mounted() {
+    var token = window.localStorage.getItem("token");
+    if (!token) {
+      this.$message.error("请登录");
+      this.$router.push({ name: "login" });
+    }
+  },
+  methods: {
+    // 退出功能
+    logOut() {
+      // 删除token
+      window.localStorage.clear("token");
+      // 跳转到登录页
+      this.$router.push({ name: "login" });
+    }
+  }
+};
+</script>
+
+<style>
+.height100 {
+  height: 100%;
+}
+/* breadcrumb transition */
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  transition: all .5s;
+}
+
+.breadcrumb-enter,
+.breadcrumb-leave-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.breadcrumb-move {
+  transition: all .5s;
+}
+
+.breadcrumb-leave-active {
+  position: absolute;
+}
+
+.logo {
+  color: #ccc;
+  background-color: royalblue;
+  line-height: 60px;
+}
+.el-header,
+.el-footer {
+  /* background-color: #b3c0d1; */
+  color: #ffffff;
+  text-align: center;
+  line-height: 20px;
+}
+
+.el-aside {
+  background-color: #011b38;
+  color: #333;
+  text-align: center;
+  line-height: 200px;
+}
+.el-main {
+  /* background-color: #e9eef3; */
+  color: #333;
+  width: 50%;
+  /* text-align: center; */
+}
+
+body > .el-container {
+  margin-bottom: 40px;
+}
+
+.el-container:nth-child(5) .el-aside,
+.el-container:nth-child(6) .el-aside {
+  line-height: 260px;
+}
+
+.el-container:nth-child(7) .el-aside {
+  line-height: 320px;
+}
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.3s;
+}
+.fade-transform-enter {
+  opacity: 0;
+  transform: translate3d(0, -20px, -20px);
+}
+.fade-transform-leave-to {
+  opacity: 0;
+  /* transform: translateY(20px); */
+  transform: translate3d(0, 20px, 20px);
+}
+</style>
